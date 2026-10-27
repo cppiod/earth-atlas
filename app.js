@@ -12,12 +12,27 @@ const chineseName = f => key(f)==="People's Republic of China"?'中国':f.proper
 const displayName = f => `${key(f)}${chineseName(f) ? ' · ' + chineseName(f) : ''}`;
 const group = (features,name,type) => ({type:'Feature',properties:{atlasName:name,atlasType:type},geometry:{type:'GeometryCollection',geometries:features.map(f=>f.geometry)}});
 const entries = () => mode()==='countries'?countries:regions;
+function updateLocator(f){
+ svg.selectAll('.small-place-locator').remove();
+ if(!f||f.properties.atlasType!=='country'||!path)return;
+ const bounds=path.bounds(f),dx=bounds[1][0]-bounds[0][0],dy=bounds[1][1]-bounds[0][1];
+ // Use screen size so the marker disappears when the place is already easy to see.
+ if(!Number.isFinite(dx)||!Number.isFinite(dy)||Math.max(dx,dy)>80||path.area(f)>80)return;
+ const center=d3.geoCentroid(f);
+ if(globe()&&d3.geoDistance(center,[-rotation[0],-rotation[1]])>=Math.PI/2)return;
+ svg.append('circle').attr('class','small-place-locator')
+  .attr('cx',(bounds[0][0]+bounds[1][0])/2).attr('cy',(bounds[0][1]+bounds[1][1])/2)
+  .attr('r',Math.max(12,Math.hypot(dx,dy)/2+5))
+  .attr('fill','none').attr('stroke','#e13b32').attr('stroke-width',2.5)
+  .attr('pointer-events','none').attr('aria-label',`Location of ${displayName(f)}`);
+}
 function select(name,scroll=false){
  if(active===name)return; active=name;
  svg.selectAll('.land').classed('active',f=>(mode()==='countries'?key(f):f.properties.CONTINENT)===name);
  svg.selectAll('.marine').classed('active',f=>key(f)===name);
  document.querySelectorAll('#places button').forEach(b=>{b.classList.toggle('active',b.dataset.name===name);b.setAttribute('aria-pressed',String(b.dataset.name===name));});
  const f=entries().find(f=>key(f)===name);
+ updateLocator(f);
  $('selected-name').textContent=f?displayName(f):'Where will you explore?';
  $('selected-detail').textContent=f?(f.properties.atlasType==='country'?`${f.properties.CONTINENT} · ${chineseNames[f.properties.CONTINENT] || ''} · Country / area`:f.properties.atlasType==='ocean'?'Ocean · Follow the waters that connect our world.':`${countries.filter(c=>c.properties.CONTINENT===name).length} mapped countries and areas · Continent`):'Move across the Earth or choose a place from the directory.';
  if(scroll&&name){const b=[...document.querySelectorAll('#places button')].find(b=>b.dataset.name===name);if(b)b.scrollIntoView({block:'nearest',behavior:'instant'});}
@@ -44,7 +59,7 @@ function render(){
  $('view-label').textContent=globe()?'01 / GLOBE':'02 / WORLD MAP';$('hint').textContent=globe()?'Drag to rotate · Scroll to zoom · Hover to discover':'Scroll to zoom · Drag to pan · Hover to discover';
 }
 let pan=[0,0];
-function applyPan(){if(!globe()){projection.translate([width/2+pan[0],height/2+pan[1]]);svg.selectAll('path').attr('d',path);}}
+function applyPan(){if(!globe()){projection.translate([width/2+pan[0],height/2+pan[1]]);svg.selectAll('path').attr('d',path);updateLocator(entries().find(f=>key(f)===active));}}
 svg.on('pointermove',event=>{if(dragging||!projection)return;const xy=d3.pointer(event), center=projection.translate();if(globe()&&Math.hypot(xy[0]-center[0],xy[1]-center[1])>projection.scale()){select(null);return;}const coords=projection.invert(xy);if(!coords||!coords.every(Number.isFinite)){select(null);return;}const country=countries.find(f=>d3.geoContains(f,coords));const found=country?(mode()==='countries'?key(country):country.properties.CONTINENT):mode()==='regions'?key(oceans.find(f=>d3.geoContains(f,coords))||{properties:{}}):null;select(found||null,true);}).on('pointerleave',()=>{if(!dragging)select(null);});
 svg.call(d3.drag().on('start',()=>{dragging=true;select(null);}).on('drag',event=>{if(globe()){rotation[0]+=event.dx*.3/zoom;rotation[1]=Math.max(-89,Math.min(89,rotation[1]-event.dy*.3/zoom));render();}else{pan[0]+=event.dx;pan[1]+=event.dy;applyPan();}}).on('end',()=>{dragging=false;}));
 svg.on('wheel',event=>{event.preventDefault();zoom=Math.max(.75,Math.min(5,zoom*Math.exp(-event.deltaY*.001)));render();applyPan();},{passive:false});
