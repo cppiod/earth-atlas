@@ -47,7 +47,7 @@ svg.call(d3.drag().on('start',()=>{dragging=true;select(null);}).on('drag',event
 svg.on('wheel',event=>{event.preventDefault();zoom=Math.max(.75,Math.min(5,zoom*Math.exp(-event.deltaY*.001)));render();applyPan();},{passive:false});
 $('zoom-in').onclick=()=>{zoom=Math.min(5,zoom*1.25);render();applyPan();};$('zoom-out').onclick=()=>{zoom=Math.max(.75,zoom/1.25);render();applyPan();};$('reset').onclick=()=>{rotation=[-15,-12,0];zoom=1;pan=[0,0];select(null);render();};
 $('view').onchange=()=>{zoom=1;pan=[0,0];render();};$('layer').onchange=()=>{select(null);$('search').value='';list();render();applyPan();};$('search').oninput=list;
-Promise.all(['countries','marine'].map(file=>d3.json(`data/${file}.geojson`))).then(([land,marine])=>{
+Promise.all(['countries','marine'].map(file=>d3.json(`data/${file}.geojson?v=2`))).then(([land,marine])=>{
  countries=land.features.map(f=>({...f,properties:{...f.properties,CONTINENT:f.properties.CONTINENT==='Seven seas (open ocean)'?(f.properties.REGION_UN==='Americas'?'South America':f.properties.REGION_UN):f.properties.CONTINENT,atlasName:countryName(f),atlasType:'country'}})).sort((a,b)=>key(a).localeCompare(key(b)));
  oceans=[...d3.group(marine.features.filter(f=>f.properties.featurecla==='ocean'),f=>oceanName(f.properties.name))].map(([name,features])=>group(features,name,'ocean')).sort((a,b)=>key(a).localeCompare(key(b)));
  regions=[...[...d3.group(countries,f=>f.properties.CONTINENT)].map(([name,features])=>group(features,name,'continent')).sort((a,b)=>key(a).localeCompare(key(b))),...oceans];
