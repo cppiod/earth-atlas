@@ -30,6 +30,6 @@ Before implementation, reviewed:
 
 ## Geography and attribution
 
-Natural Earth 1:50m countries and areas; 1:110m marine polygons. Seven continent categories follow Natural Earth's classification. North/South Atlantic and Pacific marine features are combined into five ocean entries. Ocean boundaries follow this dataset and are generalized; some marginal seas are outside its main ocean polygons. Boundaries, names and continent assignments are educational representations, not a statement on sovereignty. Small islands may be difficult to point at; use the searchable directory to find them.
+Natural Earth 1:50m countries and areas; 1:110m marine polygons. Seven continent categories follow Natural Earth's classification, with its "Seven seas" islands assigned using the dataset's UN region (southern Atlantic islands to South America). North/South Atlantic and Pacific marine features are combined into five ocean entries. Ocean boundaries follow this dataset and are generalized; some marginal seas are outside its main ocean polygons. Boundaries, names and continent assignments are educational representations, not a statement on sovereignty. Small islands may be difficult to point at; use the searchable directory to find them.
 
 D3 copyright and ISC license: [vendor/D3-LICENSE](vendor/D3-LICENSE). Natural Earth data is public domain: https://www.naturalearthdata.com/about/terms-of-use/ . Application code is MIT licensed.
