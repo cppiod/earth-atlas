@@ -1,5 +1,9 @@
 # Earth Atlas
 
+## [Open the live demo](https://cppiod.github.io/earth-atlas/)
+
+Use Earth Atlas directly in your browser. The demo is public and hosted on GitHub Pages; no download, installation, account, or local deployment is required.
+
 A public, static geography explorer inspired by the supplied hand-drawn layout.
 
 - Center: draggable orthographic globe or Natural Earth world map.
