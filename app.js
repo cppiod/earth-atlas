@@ -8,7 +8,7 @@ const mode = () => $('layer').value;
 const globe = () => $('view').value==='globe';
 const key = f => f.properties.atlasName;
 const chineseNames = {'Africa':'非洲','Antarctica':'南极洲','Asia':'亚洲','Europe':'欧洲','North America':'北美洲','South America':'南美洲','Oceania':'大洋洲','Arctic Ocean':'北冰洋','Atlantic Ocean':'大西洋','Indian Ocean':'印度洋','Pacific Ocean':'太平洋','Southern Ocean':'南冰洋'};
-const chineseName = f => f.properties.NAME_ZH || chineseNames[key(f)] || '';
+const chineseName = f => key(f)==="People's Republic of China"?'中国':f.properties.NAME_ZH || chineseNames[key(f)] || '';
 const displayName = f => `${key(f)}${chineseName(f) ? ' · ' + chineseName(f) : ''}`;
 const group = (features,name,type) => ({type:'Feature',properties:{atlasName:name,atlasType:type},geometry:{type:'GeometryCollection',geometries:features.map(f=>f.geometry)}});
 const entries = () => mode()==='countries'?countries:regions;
