@@ -7,19 +7,17 @@ A public, static geography explorer inspired by the supplied hand-drawn layout.
 - Left: searchable continents/oceans or countries/areas directory.
 - Hovering the map highlights the corresponding geometry and directory entry. Directory hover and keyboard focus highlight geometry; clicking a name turns the globe toward it.
 - Wheel and buttons zoom; drag rotates the globe or pans the map. Responsive layout supports smaller screens.
-- Discover also includes Typical Animals (12 representative wildlife locations), Landforms (12 example locations), Climate Zones (five broad latitude belts), and Ocean Currents & Monsoon (10 surface currents plus seasonal monsoon examples).
-- All layers have English/Chinese names, searchable lists, linked hover highlighting, and descriptive notes. Monsoon winds have a June–September / December–February selector. Orange and blue arrows show warm and cold currents; dashed purple arrows show winds.
+- Discover also includes Typical Animals (12 representative wildlife locations) and Climate Zones (five broad latitude belts).
+- All layers have English/Chinese names, searchable lists, linked hover highlighting, and descriptive notes.
 
 ## Educational layers
 
-`layers.js` contains curated examples and schematic coordinates. Animal markers represent one location within a species' habitat, not complete ranges. Landform markers identify representative locations, not surveyed extents. Climate colors depict five latitude-based geographic belts, not a Köppen climate classification or a local-weather map. Current and monsoon arrows are simplified educational directions, not live observations or navigation data. Warm/cold currents are relative to surrounding waters.
+`layers.js` contains curated examples and schematic coordinates. Animal markers represent one location within a species' habitat, not complete ranges. Climate colors depict five latitude-based geographic belts, not a Köppen climate classification or a local-weather map.
 
 Background references and further reading:
 
 - [WWF species directory](https://www.worldwildlife.org/species/), [giant panda](https://www.worldwildlife.org/species/giant-panda/), [jaguar](https://www.worldwildlife.org/species/jaguar).
-- [British Geological Survey: landforms](https://www.bgs.ac.uk/discovering-geology/geological-processes/landforms/), [UNESCO: Great Barrier Reef](https://whc.unesco.org/en/list/154).
 - [National Geographic: geographic zones](https://education.nationalgeographic.org/resource/zone/), [NOAA: climate types](https://www.nesdis.noaa.gov/about/k-12-education/understanding-our-planet/what-are-the-different-climate-types).
-- [NOAA: ocean circulation](https://www.noaa.gov/jetstream/ocean/circulations), [NOAA: monsoons](https://www.nesdis.noaa.gov/about/k-12-education/severe-weather/what-monsoon).
 
 ## Run locally
 

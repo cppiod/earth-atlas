@@ -12,7 +12,7 @@ const chineseName = f => key(f)==="People's Republic of China"?'中国':f.proper
 const displayName = f => `${key(f)}${chineseName(f) ? ' · ' + chineseName(f) : ''}`;
 const group = (features,name,type) => ({type:'Feature',properties:{atlasName:name,atlasType:type},geometry:{type:'GeometryCollection',geometries:features.map(f=>f.geometry)}});
 const theme = () => thematicLayers[mode()];
-const entries = () => mode()==='countries'?countries:mode()==='regions'?regions:theme().features.filter(f=>!f.properties.season||f.properties.season==='all'||f.properties.season===$('season').value);
+const entries = () => mode()==='countries'?countries:mode()==='regions'?regions:theme().features;
 function choosePlace(f){
  if(globe()){const center=f.properties.anchor||d3.geoCentroid(f);rotation=[-center[0],-center[1],0];render();}
  select(null);select(key(f));
@@ -25,15 +25,6 @@ function drawTheme(){
  const features=entries();
  if(mode()==='climate'){
   layer.selectAll('path').data(features).join('path').attr('class','theme-feature climate-band').attr('data-name',key).attr('d',path).attr('fill',f=>f.properties.color).append('title').text(displayName);
- }else if(mode()==='currents'){
-  const defs=layer.append('defs');
-  for(const kind of ['warm','cold','monsoon'])defs.append('marker').attr('id',`arrow-${kind}`).attr('viewBox','0 -4 8 8').attr('refX',7).attr('refY',0).attr('markerWidth',7).attr('markerHeight',7).attr('orient','auto').append('path').attr('d','M0,-3L7,0L0,3Z').attr('fill',kind==='warm'?'#d56849':kind==='cold'?'#3688b5':'#9a63b2');
-  const groups=layer.selectAll('.flow-group').data(features).join('g').attr('class','flow-group theme-feature').attr('data-name',key);
-  groups.append('path').attr('class','flow-hit').attr('d',path);
-  groups.append('path').attr('class',f=>`flow-line ${f.properties.kind}`).attr('d',path).attr('stroke',f=>f.properties.color);
-  // Separate arrowheads avoid false arrows at the globe's clipped horizon.
-  groups.each(function(f){const points=f.geometry.coordinates,end=points[points.length-1],prior=points[points.length-2];if(visiblePoint(end)&&visiblePoint(prior))d3.select(this).append('path').datum({type:'LineString',coordinates:[d3.geoInterpolate(prior,end)(.85),end]}).attr('class','flow-arrow').attr('d',path).attr('stroke',f.properties.color).attr('marker-end',`url(#arrow-${f.properties.kind})`);});
-  groups.append('title').text(displayName);
  }else{
   const markers=layer.selectAll('g').data(features.filter(f=>visiblePoint(f.geometry.coordinates))).join('g').attr('class','theme-feature theme-marker').attr('data-name',key).attr('transform',f=>`translate(${projection(f.geometry.coordinates)})`);
   markers.append('circle').attr('r',15).attr('fill','#fffdf4').attr('stroke',f=>f.properties.color);
@@ -100,12 +91,12 @@ svg.call(d3.drag().on('start',()=>{dragging=true;select(null);}).on('drag',event
 svg.on('wheel',event=>{event.preventDefault();zoom=Math.max(.75,Math.min(5,zoom*Math.exp(-event.deltaY*.001)));render();applyPan();},{passive:false});
 $('zoom-in').onclick=()=>{zoom=Math.min(5,zoom*1.25);render();applyPan();};$('zoom-out').onclick=()=>{zoom=Math.max(.75,zoom/1.25);render();applyPan();};$('reset').onclick=()=>{rotation=[-15,-12,0];zoom=1;pan=[0,0];select(null);render();};
 $('view').onchange=()=>{zoom=1;pan=[0,0];render();};$('layer').onchange=()=>{
- select(null);$('search').value='';$('season-control').hidden=mode()!=='currents';
+ select(null);$('search').value='';
  $('layer-note').textContent=theme()?.note||'SEVEN CONTINENTS. FIVE OCEANS. ONE SHARED HOME.';
  $('layer-legend').textContent=theme()?.legend||'Land · Ocean · Highlight';
  list();render();applyPan();
 };
-$('season').onchange=()=>{select(null);list();render();applyPan();};$('search').oninput=list;
+$('search').oninput=list;
 Promise.all(['countries','marine'].map(file=>d3.json(`data/${file}.geojson?v=2`))).then(([land,marine])=>{
  countries=land.features.map(f=>({...f,properties:{...f.properties,CONTINENT:f.properties.CONTINENT==='Seven seas (open ocean)'?(f.properties.REGION_UN==='Americas'?'South America':f.properties.REGION_UN):f.properties.CONTINENT,atlasName:countryName(f),atlasType:'country'}})).sort((a,b)=>key(a).localeCompare(key(b)));
  oceans=[...d3.group(marine.features.filter(f=>f.properties.featurecla==='ocean'),f=>oceanName(f.properties.name))].map(([name,features])=>group(features,name,'ocean')).sort((a,b)=>key(a).localeCompare(key(b)));
